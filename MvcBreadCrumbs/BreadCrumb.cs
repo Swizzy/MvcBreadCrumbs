@@ -66,7 +66,10 @@ namespace MvcBreadCrumbs
         /// <returns>The currently active URL from the BreadCrumb</returns>
         public static string GetCurrentUrl()
         {
-            return StateManager.GetState(SessionProvider.SessionId).Current.Url;
+            var state = StateManager.GetState(SessionProvider.SessionId);
+            if (state.Current != null)
+                return state.Current.Url;
+            return state.Crumbs.LastOrDefault()?.Url; // We can probably assume the last entry is the current entry
         }
 
         /// <summary>
