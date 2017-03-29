@@ -9,6 +9,7 @@ namespace MvcBreadCrumbs
 {
     public class BreadCrumb
     {
+        private static bool _overrideCurrent;
         private static IProvideBreadCrumbsSession _SessionProvider { get; set; }
 
         private static IProvideBreadCrumbsSession SessionProvider
@@ -22,6 +23,17 @@ namespace MvcBreadCrumbs
                 return new HttpSessionProvider();
             }
         }
+
+        public static void SetLastItemAsLink()
+        {
+            _overrideCurrent = true;
+        }
+
+        public static void ResetLastItemAsLink()
+        {
+            _overrideCurrent = false;
+        }
+
         public static void Add(string url, string label)
         {
             // get a key for the Url.
@@ -124,7 +136,7 @@ namespace MvcBreadCrumbs
             sb.Append("\">");
             state.Crumbs.Select(x => new { Entry = x, IsCurrent = IsCurrentPage(x.Key) }).OrderBy(x => x.IsCurrent).ToList().ForEach(x =>
             {
-                if (x.IsCurrent)
+                if (x.IsCurrent && !_overrideCurrent)
                 {
                     sb.Append("<li class='active'>" + x.Entry.Label + "</li>");
                 }
